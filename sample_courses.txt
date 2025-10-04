@@ -1,0 +1,13 @@
+# My completed courses
+# This file supports both formats:
+
+# One course per line:
+EEL 3801C
+EEE 3342C
+EEL 3123C
+
+# Or comma-separated:
+EEL 3657, EEL 4750
+
+# Comments (lines starting with #) are ignored
+# Empty lines are also ignored
