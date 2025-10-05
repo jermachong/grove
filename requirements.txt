@@ -1,3 +1,3 @@
-# Technical Electives Course Map CLI Tool
+# Grove - Academic Course Analysis CLI
 # Core dependency for PDF parsing
-PyMuPDF>=1.23.0
+PyMuPDF>=1.26.0

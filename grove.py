@@ -1,17 +1,26 @@
 #!/usr/bin/env python3
-"""
-Technical Electives Course Map CLI Tool
-A command-line tool for analyzing technical elective courses from PDF documents.
+r"""
+Grove - Academic Course Analysis CLI
+A streamlined command-line tool for analyzing technical elective courses from PDF catalogs.
+
+      ╭─────────────────────────────────╮
+      │   ____                          │
+      │  / ___|_ __ _____   _____        │
+      │ | |  _| '__/ _ \ \ / / _ \       │
+      │ | |_| | | | (_) \ V /  __/       │
+      │  \____|_|  \___/ \_/ \___|       │
+      │                                 │
+      │  Academic Course Planning Tool  │
+      ╰─────────────────────────────────╯
 
 Usage:
-    tech_elect_map [options] <pdf_file>
+    grove [options] <pdf_file>
 
 Examples:
-    tech_elect_map courses.pdf
-    tech_elect_map courses.pdf --major CpE --undergrad
-    tech_elect_map courses.pdf --completed-file my_courses.txt --eligible
-    tech_elect_map courses.pdf --search "VLSI" --verbose
-    tech_elect_map courses.pdf --stats --output results.csv
+    grove my_catalog.pdf
+    grove university_courses.pdf --major CpE --undergrad
+    grove electives.pdf --course-history my_courses.txt --verbose
+    grove catalog.pdf --stats --output results.csv
 """
 
 import argparse
@@ -20,13 +29,14 @@ import os
 import csv
 from pathlib import Path
 import re
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Optional, Any
 
 # Import the core functionality from the existing module
 from tech_elect_map import (
     extract_courses_data, parse_courses, parse_prerequisites,
     check_prerequisites_met, is_graduate_course, filter_by_academic_level,
-    get_eligible_courses, search_courses_by_major
+    get_eligible_courses, search_courses_by_major, display_prerequisite_chains,
+    find_prerequisite_paths
 )
 
 # Color codes for terminal output
@@ -46,6 +56,32 @@ def colorize(text: str, color: str) -> str:
     if sys.stdout.isatty():
         return f"{color}{text}{Colors.ENDC}"
     return text
+
+def show_grove_header():
+    """Display the Grove ASCII art header"""
+    header = f"""
+{colorize('┌─────────────────────────────────────────────────────────┐', Colors.CYAN)}
+{colorize('│                                                         │', Colors.CYAN)}
+{colorize('│   ██████  ██████   ██████  ██    ██ ███████             │', Colors.GREEN)}
+{colorize('│  ██       ██   ██ ██    ██ ██    ██ ██                  │', Colors.GREEN)}
+{colorize('│  ██   ███ ██████  ██    ██ ██    ██ █████               │', Colors.GREEN)}
+{colorize('│  ██    ██ ██   ██ ██    ██  ██  ██  ██                  │', Colors.GREEN)}
+{colorize('│   ██████  ██   ██  ██████    ████   ███████             │', Colors.GREEN)}
+{colorize('│                                                         │', Colors.CYAN)}
+{colorize('│            Academic Course Planning Tool                │', Colors.YELLOW)}
+{colorize('│                 Technical Electives                     │', Colors.YELLOW)}
+{colorize('│                                                         │', Colors.CYAN)}
+{colorize('└─────────────────────────────────────────────────────────┘', Colors.CYAN)}
+"""
+    print(header)
+
+def format_prerequisites_for_display(prereq_expr) -> str:
+    """Convert structured prerequisite expression to display string"""
+    if not prereq_expr:
+        return 'None'
+    
+    # For CLI display, we'll show a simplified version
+    return str(prereq_expr)
 
 def load_completed_courses(file_path: str) -> List[str]:
     """Load completed courses from a text file"""
@@ -112,7 +148,7 @@ def search_courses(courses: List[Dict], query: str) -> List[Dict]:
     
     return results
 
-def display_stats(courses: List[Dict], completed_courses: List[str] = None):
+def display_stats(courses: List[Dict], completed_courses: Optional[List[str]] = None):
     """Display course statistics"""
     total = len(courses)
     undergrad = len([c for c in courses if not is_graduate_course(c)])
@@ -141,25 +177,18 @@ def display_stats(courses: List[Dict], completed_courses: List[str] = None):
         ineligible_count = len(eligible_courses) - eligible_count - len(completed_courses)
         
         print(f"\n{colorize('Your Progress:', Colors.BOLD)}")
-        print(f"  {colorize('✓ Completed:', Colors.GREEN)} {len(completed_courses)}")
-        print(f"  {colorize('✓ Eligible to take:', Colors.GREEN)} {eligible_count}")
-        print(f"  {colorize('✗ Need prerequisites:', Colors.RED)} {ineligible_count}")
+        print(f"  {colorize('[OK] Completed:', Colors.GREEN)} {len(completed_courses)}")
+        print(f"  {colorize('[OK] Eligible to take:', Colors.GREEN)} {eligible_count}")
+        print(f"  {colorize('[X] Need prerequisites:', Colors.RED)} {ineligible_count}")
 
-def display_table(courses: List[Dict], verbose: bool = False, completed_courses: List[str] = None, show_eligible_only: bool = False):
+def display_table(courses: List[Dict], verbose: bool = False, completed_courses: Optional[List[str]] = None):
     """Display courses in table format"""
     if not courses:
         print(f"{colorize('No courses found.', Colors.YELLOW)}")
         return
     
-    # Filter for eligible courses only if requested
+    # All courses are displayed
     display_courses = courses
-    if show_eligible_only and completed_courses:
-        eligible_courses = get_eligible_courses(courses, completed_courses)
-        display_courses = [c for c in eligible_courses if c['prereqs_met'] and c['course_code'] not in completed_courses]
-    
-    if not display_courses:
-        print(f"{colorize('No eligible courses found.', Colors.YELLOW)}")
-        return
     
     # Determine eligibility status if completed courses provided
     eligibility_info = {}
@@ -168,11 +197,11 @@ def display_table(courses: List[Dict], verbose: bool = False, completed_courses:
         for course in eligible_courses:
             code = course['course_code']
             if code in completed_courses:
-                eligibility_info[code] = ('✓', Colors.GREEN)
+                eligibility_info[code] = ('[OK]', Colors.GREEN)
             elif course['prereqs_met']:
-                eligibility_info[code] = ('✓', Colors.GREEN)
+                eligibility_info[code] = ('[OK]', Colors.GREEN)
             else:
-                eligibility_info[code] = ('✗', Colors.RED)
+                eligibility_info[code] = ('[X]', Colors.RED)
     
     if verbose:
         # Detailed format
@@ -186,7 +215,7 @@ def display_table(courses: List[Dict], verbose: bool = False, completed_courses:
             print(f"   {colorize('Level:', Colors.CYAN)} {'Graduate' if is_graduate_course(course) else 'Undergraduate'}")
             
             prereqs = parse_prerequisites(course['full_description'])
-            prereq_text = ', '.join(prereqs) if prereqs else 'None'
+            prereq_text = format_prerequisites_for_display(prereqs)
             print(f"   {colorize('Prerequisites:', Colors.CYAN)} {prereq_text}")
             
             # Truncate description for readability
@@ -205,7 +234,7 @@ def display_table(courses: List[Dict], verbose: bool = False, completed_courses:
         col_widths = [max(len(h), 12) for h in headers]
         for course in display_courses:
             prereqs = parse_prerequisites(course['full_description'])
-            prereq_text = ', '.join(prereqs[:2]) + ('...' if len(prereqs) > 2 else '') if prereqs else 'None'
+            prereq_text = format_prerequisites_for_display(prereqs)
             
             widths = [
                 len(course['course_code']),
@@ -225,7 +254,7 @@ def display_table(courses: List[Dict], verbose: bool = False, completed_courses:
         # Print courses
         for course in display_courses:
             prereqs = parse_prerequisites(course['full_description'])
-            prereq_text = ', '.join(prereqs[:2]) + ('...' if len(prereqs) > 2 else '') if prereqs else 'None'
+            prereq_text = format_prerequisites_for_display(prereqs)
             
             row_data = [
                 course['course_code'].ljust(col_widths[0]),
@@ -237,13 +266,13 @@ def display_table(courses: List[Dict], verbose: bool = False, completed_courses:
             if completed_courses:
                 status_symbol, status_color = eligibility_info.get(course['course_code'], ('?', ''))
                 status_text = 'Completed' if course['course_code'] in completed_courses else \
-                             'Eligible' if status_symbol == '✓' else \
-                             'Need Prereqs' if status_symbol == '✗' else 'Unknown'
+                             'Eligible' if status_symbol == '[OK]' else \
+                             'Need Prereqs' if status_symbol == '[X]' else 'Unknown'
                 row_data.append(colorize(status_text.ljust(col_widths[4]), status_color))
             
             print(' | '.join(row_data))
 
-def export_to_csv(courses: List[Dict], filename: str, completed_courses: List[str] = None):
+def export_to_csv(courses: List[Dict], filename: str, completed_courses: Optional[List[str]] = None):
     """Export courses to CSV file"""
     try:
         with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
@@ -273,7 +302,7 @@ def export_to_csv(courses: List[Dict], filename: str, completed_courses: List[st
                     'Course Code': course['course_code'],
                     'Majors': course['majors'],
                     'Level': 'Graduate' if is_graduate_course(course) else 'Undergraduate',
-                    'Prerequisites': ', '.join(prereqs) if prereqs else 'None',
+                    'Prerequisites': format_prerequisites_for_display(prereqs),
                     'Description': course['full_description']
                 }
                 
@@ -289,19 +318,18 @@ def export_to_csv(courses: List[Dict], filename: str, completed_courses: List[st
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Technical Electives Course Map CLI Tool',
+        description='Grove - Academic Course Analysis CLI',
         epilog="""
 Examples:
   %(prog)s courses.pdf
   %(prog)s courses.pdf --major CpE --undergrad
-  %(prog)s courses.pdf --completed-file my_courses.txt
-  %(prog)s courses.pdf --search "VLSI" --verbose
+  %(prog)s courses.pdf --course-history my_courses.txt --verbose
   %(prog)s courses.pdf --stats --output results.csv
         """,
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument('pdf_file', help='Path to the technical electives PDF file')
+    parser.add_argument('pdf_file', help='Path to the course catalog PDF file (relative or absolute path)')
     
     # Academic level (mutually exclusive)
     level_group = parser.add_mutually_exclusive_group()
@@ -313,12 +341,11 @@ Examples:
     # Filtering options
     parser.add_argument('-m', '--major', choices=['EE', 'CpE', 'CS', 'IT', 'EE2', 'CpE1', 'EE3'],
                        help='Filter by major')
-    parser.add_argument('--search', help='Search courses by keyword')
+
     
     # Prerequisites and eligibility
-    parser.add_argument('--completed-file', help='File containing completed courses')
-    parser.add_argument('--eligible', action='store_true',
-                       help='Show only eligible courses (requires --completed-file)')
+    parser.add_argument('-ch', '--course-history', help='File containing completed courses')
+
     
     # Output options
     parser.add_argument('-v', '--verbose', action='store_true',
@@ -334,25 +361,37 @@ Examples:
         print(f"{colorize('Error:', Colors.RED)} PDF file '{args.pdf_file}' not found.")
         sys.exit(1)
     
-    if args.eligible and not args.completed_file:
-        print(f"{colorize('Error:', Colors.RED)} --eligible requires --completed-file")
+
+    
+    # Validate PDF file exists
+    if not os.path.isfile(args.pdf_file):
+        print(f"{colorize('Error:', Colors.RED)} PDF file '{args.pdf_file}' not found.")
         sys.exit(1)
+    
+    # Show Grove header
+    show_grove_header()
     
     # Load course data
     print(f"{colorize('Loading course data from PDF...', Colors.CYAN)}")
     try:
         pdf_text = extract_courses_data(args.pdf_file)
         all_courses = parse_courses(pdf_text)
-        print(f"{colorize('✓', Colors.GREEN)} Loaded {len(all_courses)} courses")
+        print(f"{colorize('[OK]', Colors.GREEN)} Loaded {len(all_courses)} courses")
+    except FileNotFoundError:
+        print(f"{colorize('Error:', Colors.RED)} PDF file '{args.pdf_file}' not found.")
+        sys.exit(1)
     except Exception as e:
         print(f"{colorize('Error:', Colors.RED)} Failed to load PDF: {e}")
+        print(f"{colorize('Tip:', Colors.YELLOW)} Make sure the PDF contains structured course information.")
         sys.exit(1)
     
     # Load completed courses if provided
     completed_courses = []
-    if args.completed_file:
-        completed_courses = load_completed_courses(args.completed_file)
-        print(f"{colorize('✓', Colors.GREEN)} Loaded {len(completed_courses)} completed courses")
+    if args.course_history:
+        completed_courses = load_completed_courses(args.course_history)
+        print(f"{colorize('[OK]', Colors.GREEN)} Loaded {len(completed_courses)} completed courses")
+    
+
     
     # Apply filters
     filtered_courses = all_courses
@@ -371,10 +410,7 @@ Examples:
         else:
             filtered_courses = search_courses_by_major(filtered_courses, args.major)
     
-    # Apply search filter
-    if args.search:
-        filtered_courses = search_courses(filtered_courses, args.search)
-        print(f"{colorize('Search results:', Colors.CYAN)} {len(filtered_courses)} courses match '{args.search}'")
+
     
     # Show statistics if requested
     if args.stats:
@@ -382,7 +418,7 @@ Examples:
     
     # Display results
     if not args.stats or len(filtered_courses) > 0:
-        display_table(filtered_courses, args.verbose, completed_courses, args.eligible)
+        display_table(filtered_courses, args.verbose, completed_courses)
     
     # Export to CSV if requested
     if args.output:
