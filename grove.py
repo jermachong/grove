@@ -31,12 +31,11 @@ from pathlib import Path
 import re
 from typing import List, Dict, Optional, Optional, Any
 
-# Import the core functionality from the existing module
-from tech_elect_map import (
+# Import the core functionality from Grove's parsing engine
+from grove_core import (
     extract_courses_data, parse_courses, parse_prerequisites,
     check_prerequisites_met, is_graduate_course, filter_by_academic_level,
-    get_eligible_courses, search_courses_by_major, display_prerequisite_chains,
-    find_prerequisite_paths
+    get_eligible_courses, search_courses_by_major
 )
 
 # Color codes for terminal output
