@@ -1,3 +1,5 @@
+# Grove - Technical Electives Course Map CLI
+
 ```
 
 
@@ -35,15 +37,15 @@ A powerful command-line tool for analyzing technical elective courses, checking 
 1. Clone this repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/jermachong/tech-elect.git
    cd tech-elect
    ```
 
-2. Create a virtual environment:
+2. Create and activate a virtual environment:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   python3 -m venv grove_env
+   source grove_env/bin/activate  # On Windows: grove_env\Scripts\activate
    ```
 
 3. Install dependencies:
@@ -52,41 +54,38 @@ A powerful command-line tool for analyzing technical elective courses, checking 
    pip install -r requirements.txt
    ```
 
+4. Verify installation:
+
+   ```bash
+   python3 grove.py --help
+   ```
+
 ### Usage
 
-Use the provided shell script for easy execution:
+Use Grove with Python:
 
 ```bash
 # Show help
-./tech_elect_map --help
+python3 grove.py --help
 
 # Basic usage - show all courses with statistics
-./tech_elect_map courses.pdf --stats
+python3 grove.py courses.pdf --stats
 
 # Filter by major and academic level
-./tech_elect_map courses.pdf --major CpE --undergrad
+python3 grove.py courses.pdf --major CpE --undergrad
 
-# Search for specific topics
-./tech_elect_map courses.pdf --search "machine learning" --verbose
-
-# Check eligible courses based on completed coursework
-./tech_elect_map courses.pdf --completed-file my_courses.txt --eligible
+# Check courses with completed coursework
+python3 grove.py courses.pdf --course-history my_courses.txt --verbose
 
 # Generate statistics and export to CSV
-./tech_elect_map courses.pdf --stats --output results.csv
-```
-
-Alternatively, use Python directly:
-
-```bash
-.venv/bin/python tech_elect_cli.py courses.pdf [options]
+python3 grove.py courses.pdf --stats --output results.csv
 ```
 
 ## Command Line Options
 
 ```
 positional arguments:
-  pdf_file              Path to the technical electives PDF file
+  pdf_file              Path to the course catalog PDF file
 
 options:
   -h, --help            Show help message and exit
@@ -94,10 +93,8 @@ options:
   -g, --graduate        Show only graduate courses
   -m, --major {EE,CpE,CS,IT,EE2,CpE1,EE3}
                         Filter by major
-  --search SEARCH       Search courses by keyword
-  --completed-file COMPLETED_FILE
+  -ch, --course-history COURSE_HISTORY
                         File containing completed courses
-  --eligible            Show only eligible courses (requires --completed-file)
   -v, --verbose         Show detailed course information
   -s, --stats           Show course statistics
   --output OUTPUT       Export results to CSV file
@@ -124,28 +121,22 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 
 ## Examples
 
-### Find Machine Learning Courses
+### Check CpE Undergraduate Courses with Course History
 
 ```bash
-./tech_elect_map courses.pdf --search "machine learning" --verbose
-```
-
-### Check Eligible CpE Undergraduate Courses
-
-```bash
-./tech_elect_map courses.pdf --completed-file my_courses.txt --eligible --major CpE --undergrad
+python3 grove.py courses.pdf --course-history my_courses.txt --major CpE --undergrad --verbose
 ```
 
 ### Generate Complete Course Statistics
 
 ```bash
-./tech_elect_map courses.pdf --stats --output course_analysis.csv
+python3 grove.py courses.pdf --stats --output course_analysis.csv
 ```
 
-### Search for VLSI-related Courses
+### View All Courses with Detailed Information
 
 ```bash
-./tech_elect_map courses.pdf --search "VLSI" --verbose
+python3 grove.py courses.pdf --verbose
 ```
 
 ## Output Features
@@ -172,16 +163,16 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 If you get "ModuleNotFoundError: No module named 'pymupdf'":
 
 ```bash
-source .venv/bin/activate
-pip install PyMuPDF
+source grove_env/bin/activate
+pip install -r requirements.txt
 ```
 
-### Permission Issues
+### Python Path Issues
 
-If the shell script isn't executable:
+If you get command not found errors, use the full path:
 
 ```bash
-chmod +x tech_elect_map
+python3 /path/to/grove.py courses.pdf --help
 ```
 
 ### PDF Parsing Issues
