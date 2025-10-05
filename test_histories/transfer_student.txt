@@ -1,0 +1,2 @@
+# Test case 7: Transfer student with unusual course combination
+EGN3211, MAC2313, MAS3105, EEL3021, EEL4810, COT4210, COP4600, EEL4768

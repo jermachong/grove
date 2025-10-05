@@ -1,0 +1,2 @@
+# Test case 6: Mixed completion with some graduate courses
+EEL3123C, EEE3307C, EEL3470, CAP4611, COP4331C, EEL5173, EEE5265, CAP5100

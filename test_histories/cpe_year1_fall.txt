@@ -1,0 +1,7 @@
+# CpE Year 1 Fall - Following CpE-Comprehensive-Four-Year-Plan-24-25.pdf
+# Typical freshman fall semester courses
+MAC 2311C
+EGN 1007C
+CHS 1440
+ENC 1101
+EGS 1006C

@@ -1,0 +1,2 @@
+# Test case 2: Basic math and programming foundation
+MAC2311, MAC2312, COP3223C, PHY2048, PHY2049

@@ -1,0 +1,2 @@
+# Test case 3: EE major with circuit analysis background
+EEL3123C, EEL3004C, EEL3470, EEE3307C, EEE3342C, MAP2302, STA3032

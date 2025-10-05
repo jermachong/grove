@@ -1,0 +1,2 @@
+# Test case 4: CpE major with strong programming background
+COP3223C, COP3502C, COP3503C, EEL3801C, EEL4742C, CDA3103C, COT3960, EEL4851C

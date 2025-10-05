@@ -1,0 +1,20 @@
+# CpE Year 2 Complete - Following CpE-Comprehensive-Four-Year-Plan-24-25.pdf  
+# Sophomore year with core engineering courses
+MAC 2311C
+MAC 2312
+MAC 2313
+MAP 2302
+PHY 2048
+PHY 2049
+EGN 1007C
+EGN 3211
+EGN 3420
+CHS 1440
+ENC 1101
+ENC 1102
+EGS 1006C
+SPC 1603C
+ECO 2013
+COP 3330
+EEL 3004C
+EEL 3123C

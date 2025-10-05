@@ -22,12 +22,14 @@ A powerful command-line tool for analyzing technical elective courses, checking 
 ### Installation
 
 1. Clone this repository:
+
    ```bash
    git clone <repository-url>
    cd tech-elect
    ```
 
 2. Create a virtual environment:
+
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -63,6 +65,7 @@ Use the provided shell script for easy execution:
 ```
 
 Alternatively, use Python directly:
+
 ```bash
 .venv/bin/python tech_elect_cli.py courses.pdf [options]
 ```
@@ -93,6 +96,7 @@ options:
 Create a text file listing your completed courses:
 
 **One per line:**
+
 ```
 EEL 3123C
 EEL 3801C
@@ -101,6 +105,7 @@ COP 3503C
 ```
 
 **Comma-separated:**
+
 ```
 EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 ```
@@ -108,21 +113,25 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 ## Examples
 
 ### Find Machine Learning Courses
+
 ```bash
 ./tech_elect_map courses.pdf --search "machine learning" --verbose
 ```
 
 ### Check Eligible CpE Undergraduate Courses
+
 ```bash
 ./tech_elect_map courses.pdf --completed-file my_courses.txt --eligible --major CpE --undergrad
 ```
 
 ### Generate Complete Course Statistics
+
 ```bash
 ./tech_elect_map courses.pdf --stats --output course_analysis.csv
 ```
 
 ### Search for VLSI-related Courses
+
 ```bash
 ./tech_elect_map courses.pdf --search "VLSI" --verbose
 ```
@@ -138,7 +147,7 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 ## Supported Majors
 
 - **EE**: Electrical Engineering
-- **CpE**: Computer Engineering  
+- **CpE**: Computer Engineering
 - **CS**: Computer Science
 - **IT**: Information Technology
 - **EE2, EE3**: Specialized EE tracks
@@ -147,24 +156,30 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 ## Troubleshooting
 
 ### Virtual Environment Issues
+
 If you get "ModuleNotFoundError: No module named 'pymupdf'":
+
 ```bash
 source .venv/bin/activate
 pip install PyMuPDF
 ```
 
 ### Permission Issues
+
 If the shell script isn't executable:
+
 ```bash
 chmod +x tech_elect_map
 ```
 
 ### PDF Parsing Issues
+
 Ensure your PDF file is readable and contains structured course information. The tool expects course codes in formats like "EEL 3123C" or "CAP 4630".
 
 ## Development
 
 For advanced features and web-based visualization, check out the `feature/web-ui` branch which includes:
+
 - Interactive course dependency graphs
 - Modern web interface
 - Flask REST API
@@ -173,6 +188,7 @@ For advanced features and web-based visualization, check out the `feature/web-ui
 ## Contributing
 
 This tool was developed to help students navigate technical elective requirements. Feel free to:
+
 - Report bugs or issues
 - Suggest new features
 - Contribute improvements
