@@ -2,6 +2,9 @@
 course_history.txt
 sample_courses.txt
 
+# University degree plan documents (may be copyrighted)
+*Comprehensive-Four-Year-Plan*.pdf
+
 # Python
 __pycache__/
 *.py[cod]
