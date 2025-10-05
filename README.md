@@ -37,8 +37,8 @@ A powerful command-line tool for analyzing technical elective courses, checking 
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/jermachong/tech-elect.git
-   cd tech-elect
+   git clone https://github.com/jermachong/grove.git
+   cd grove
    ```
 
 2. Create and activate a virtual environment:
