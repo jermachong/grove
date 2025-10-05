@@ -1,16 +1,27 @@
-# Technical Electives Course Map CLI
+```
+
+
+ ░████████ ░██░████  ░███████  ░██    ░██  ░███████
+░██    ░██ ░███     ░██    ░██ ░██    ░██ ░██    ░██
+░██    ░██ ░██      ░██    ░██  ░██  ░██  ░█████████
+░██   ░███ ░██      ░██    ░██   ░██░██   ░██
+ ░█████░██ ░██       ░███████     ░███     ░███████
+       ░██
+ ░███████
+
+```
 
 A powerful command-line tool for analyzing technical elective courses, checking prerequisites, and planning your academic path. Parse PDF course catalogs and find eligible courses based on your completed coursework.
 
 ## Features
 
-- 📚 **Course Parsing**: Extract and organize course data from PDF catalogs
-- 🔍 **Smart Search**: Find courses by keyword, major, or academic level
-- ✅ **Prerequisite Checking**: Automatically determine which courses you're eligible for
-- 📊 **Statistics**: Get comprehensive statistics about available courses
-- 💾 **CSV Export**: Export filtered results for further analysis
-- 🎨 **Colored Output**: Easy-to-read terminal output with color coding
-- 🎓 **Academic Level Filtering**: Separate undergraduate and graduate courses
+- **Course Parsing**: Extract and organize course data from PDF catalogs
+- **Smart Search**: Find courses by keyword, major, or academic level
+- **Prerequisite Checking**: Automatically determine which courses you're eligible for
+- **Statistics**: Get comprehensive statistics about available courses
+- **CSV Export**: Export filtered results for further analysis
+- **Colored Output**: Easy-to-read terminal output with color coding
+- **Academic Level Filtering**: Separate undergraduate and graduate courses
 
 ## Quick Start
 
@@ -36,6 +47,7 @@ A powerful command-line tool for analyzing technical elective courses, checking 
    ```
 
 3. Install dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
@@ -138,7 +150,7 @@ EEL 3123C, EEL 3801C, EEE 3342C, COP 3503C, EGN 3211
 
 ## Output Features
 
-- **Color-coded status**: ✅ Success, ❌ Error, ⚠️ Warning
+- **Color-coded status**: [OK] Success, [X] Error, [!] Warning
 - **Formatted tables**: Clean, aligned course information
 - **Prerequisite parsing**: Automatically extracts and displays prerequisites
 - **Eligibility checking**: Shows which courses you can take based on completed work
@@ -200,4 +212,4 @@ This project is released for educational use. Please respect your institution's 
 
 ---
 
-**Happy Course Planning! 🎓**
+**Happy Course Planning!**
